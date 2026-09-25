@@ -1,0 +1,378 @@
+<title>MatchWise A Pipeline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --paper:#EDEFE6;
+    --paper-raised:#F8F9F2;
+    --ink:#16283A;
+    --ink-soft:#5B6B6E;
+    --line:#C7CFBE;
+    --teal:#1E7F78;
+    --teal-fill:#DEEEEA;
+    --amber:#A8721F;
+    --amber-fill:#F3E4C8;
+    --excluded-fill:#E6E4DA;
+    --shadow: 0 1px 0 rgba(22,40,58,0.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#0E1B24;
+      --paper-raised:#162734;
+      --ink:#E9EDE6;
+      --ink-soft:#96A6A2;
+      --line:#2C3E45;
+      --teal:#5BCDC0;
+      --teal-fill:#173430;
+      --amber:#E3AC5E;
+      --amber-fill:#3A2E17;
+      --excluded-fill:#1D2B31;
+      --shadow: none;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0E1B24;
+    --paper-raised:#162734;
+    --ink:#E9EDE6;
+    --ink-soft:#96A6A2;
+    --line:#2C3E45;
+    --teal:#5BCDC0;
+    --teal-fill:#173430;
+    --amber:#E3AC5E;
+    --amber-fill:#3A2E17;
+    --excluded-fill:#1D2B31;
+    --shadow: none;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:"Source Serif 4", Georgia, serif;
+    font-size:16px;
+    line-height:1.55;
+  }
+  .wrap{
+    max-width:920px;
+    margin-inline:auto;
+    padding-inline:24px;
+    padding-block:56px 72px;
+  }
+
+  .eyebrow{
+    font-family:"JetBrains Mono", ui-monospace, monospace;
+    font-size:12px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--amber);
+    margin:0 0 10px;
+  }
+  h1{
+    font-family:"Big Shoulders Display", "Arial Narrow", sans-serif;
+    font-weight:800;
+    font-size:clamp(2rem, 5vw, 3.1rem);
+    line-height:1.02;
+    letter-spacing:.005em;
+    text-wrap:balance;
+    margin:0 0 16px;
+    color:var(--ink);
+  }
+  .lede{
+    max-width:62ch;
+    color:var(--ink-soft);
+    font-size:1.08rem;
+    margin:0 0 8px;
+  }
+  .lede strong{color:var(--ink); font-weight:600;}
+
+  section{margin-top:56px;}
+  h2{
+    font-family:"Big Shoulders Display", "Arial Narrow", sans-serif;
+    font-weight:700;
+    font-size:1.5rem;
+    letter-spacing:.01em;
+    margin:0 0 4px;
+    color:var(--ink);
+  }
+  .section-note{
+    color:var(--ink-soft);
+    font-size:.95rem;
+    max-width:62ch;
+    margin:0 0 22px;
+  }
+
+  figure{margin:0;}
+  .diagram-scroll{
+    overflow-x:auto;
+    padding-block:4px;
+    margin:0 -4px;
+  }
+  .diagram-scroll svg{
+    display:block;
+    height:auto;
+  }
+  figcaption{
+    margin-top:14px;
+    font-size:.92rem;
+    color:var(--ink-soft);
+    max-width:64ch;
+  }
+
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:18px 28px;
+    margin-top:18px;
+    font-family:"JetBrains Mono", ui-monospace, monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .legend-item{display:flex; align-items:center; gap:9px;}
+  .swatch{width:13px; height:13px; border-radius:3px; flex:none;}
+  .sw-teal{background:var(--teal);}
+  .sw-amber{background:var(--amber);}
+  .sw-logic{background:transparent; border:2px solid var(--ink-soft);}
+
+  .callout{
+    margin-top:56px;
+    border-left:3px solid var(--amber);
+    background:var(--paper-raised);
+    padding:22px 26px;
+    border-radius:2px;
+    box-shadow:var(--shadow);
+  }
+  .callout p{
+    margin:0;
+    font-size:1.08rem;
+    font-style:italic;
+    color:var(--ink);
+    max-width:58ch;
+  }
+  .callout .cite{
+    margin-top:10px;
+    font-family:"JetBrains Mono", ui-monospace, monospace;
+    font-style:normal;
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+  }
+
+  footer{
+    margin-top:64px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+    font-family:"JetBrains Mono", ui-monospace, monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    letter-spacing:.02em;
+  }
+
+  /* SVG diagram type */
+  .n-title{font-family:"JetBrains Mono", ui-monospace, monospace; font-weight:600;}
+  .n-body{font-family:"Source Serif 4", Georgia, serif;}
+  .lbl{font-family:"JetBrains Mono", ui-monospace, monospace;}
+
+  .mk-ink{fill:var(--ink);}
+  .mk-soft{fill:var(--ink-soft);}
+  .mk-amber{fill:var(--amber);}
+
+  @media (prefers-reduced-motion: no-preference){
+    .fade-in{
+      animation: fadeUp .6s ease-out both;
+    }
+    .fade-in.d2{animation-delay:.1s;}
+  }
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(8px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+</style>
+
+<div class="wrap">
+
+  <p class="eyebrow">MatchWise </p>
+  <h1>How the Algorithm Works</h1>
+
+  <section class="fade-in">
+    <h2>1 &nbsp;·&nbsp; Three engines, one job each</h2>
+
+    <figure>
+      <div class="diagram-scroll">
+        <svg viewBox="0 0 960 250" width="960" height="250" role="img" aria-label="SBERT turns writing into 384 numbers; cosine similarity turns two sets of numbers into one value from 0 to 1; LightGBM turns nine values into a ranked order.">
+          <defs>
+            <marker id="a1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M0,0 L10,5 L0,10 Z" class="mk-ink"/>
+            </marker>
+          </defs>
+
+          <!-- Box 1: SBERT -->
+          <rect x="20" y="55" width="280" height="118" rx="4" fill="var(--paper-raised)" stroke="var(--teal)" stroke-width="2"/>
+          <rect x="20" y="55" width="6" height="118" fill="var(--teal)"/>
+          <text x="46" y="88" class="n-title" font-size="19" fill="var(--teal)">SBERT</text>
+          <text x="46" y="112" class="n-body" font-size="14" fill="var(--ink)">writing &rarr; numbers</text>
+          <text x="46" y="133" class="n-body" font-size="12.5" fill="var(--ink-soft)">a resume, or a job order</text>
+          <text x="46" y="151" class="n-body" font-size="12.5" fill="var(--ink-soft)">reduced to what it means</text>
+          <text x="46" y="197" class="lbl" font-size="11.5" fill="var(--ink-soft)">384 numbers per document</text>
+
+          <!-- Arrow 1 -->
+          <line x1="302" y1="114" x2="336" y2="114" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#a1)"/>
+          <text x="319" y="100" text-anchor="middle" class="lbl" font-size="11" fill="var(--ink-soft)">vectors</text>
+
+          <!-- Box 2: Cosine -->
+          <rect x="340" y="55" width="280" height="118" rx="4" fill="var(--paper-raised)" stroke="var(--line)" stroke-width="1.6"/>
+          <text x="366" y="88" class="n-title" font-size="19" fill="var(--ink)">COSINE</text>
+          <text x="366" y="106" class="n-title" font-size="19" fill="var(--ink)">SIMILARITY</text>
+          <text x="366" y="128" class="n-body" font-size="14" fill="var(--ink)">numbers &rarr; one value</text>
+          <text x="366" y="149" class="n-body" font-size="12.5" fill="var(--ink-soft)">the angle between two arrows</text>
+          <text x="366" y="197" class="lbl" font-size="11.5" fill="var(--ink-soft)">0 (unlike) &ndash; 1 (alike)</text>
+
+          <!-- Arrow 2 -->
+          <line x1="622" y1="114" x2="656" y2="114" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#a1)"/>
+          <text x="639" y="100" text-anchor="middle" class="lbl" font-size="11" fill="var(--ink-soft)">+ 6 more</text>
+
+          <!-- Box 3: LightGBM -->
+          <rect x="660" y="55" width="280" height="118" rx="4" fill="var(--paper-raised)" stroke="var(--amber)" stroke-width="2"/>
+          <rect x="660" y="55" width="6" height="118" fill="var(--amber)"/>
+          <text x="686" y="88" class="n-title" font-size="19" fill="var(--amber)">LIGHTGBM</text>
+          <text x="686" y="112" class="n-body" font-size="14" fill="var(--ink)">nine values &rarr; an order</text>
+          <text x="686" y="133" class="n-body" font-size="12.5" fill="var(--ink-soft)">learned from past hiring</text>
+          <text x="686" y="151" class="n-body" font-size="12.5" fill="var(--ink-soft)">outcomes, not guessed weights</text>
+          <text x="686" y="197" class="lbl" font-size="11.5" fill="var(--ink-soft)">ranked list + why, per applicant</text>
+        </svg>
+      </div>
+      <figcaption>SBERT and cosine similarity together produce three of the nine values LightGBM weighs — the other six come from ordinary arithmetic (figure 2, step 5).</figcaption>
+    </figure>
+  </section>
+
+  <section class="fade-in d2">
+    <h2>2 &nbsp;·&nbsp; The eight-step pipeline</h2>
+
+    <figure>
+      <div class="diagram-scroll">
+        <svg viewBox="0 0 860 1480" width="860" height="1480" role="img" aria-label="Flowchart: a job order is embedded once, then each applicant is checked for missing required certificates. Those missing one are excluded with no score and no position. Eligible applicants are embedded by SBERT, compared by cosine similarity, measured on six more factors, and scored by LightGBM. If the model has not yet been trained on real hiring outcomes, applicants are ordered by cosine similarity instead of the model's score. Either way, the full result is saved together.">
+          <defs>
+            <marker id="mInk" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" class="mk-ink"/></marker>
+            <marker id="mSoft" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" class="mk-soft"/></marker>
+            <marker id="mAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.2" markerHeight="6.2" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" class="mk-amber"/></marker>
+          </defs>
+
+          <!-- Job order pill -->
+          <rect x="260" y="20" width="340" height="54" rx="27" fill="none" stroke="var(--ink-soft)" stroke-width="1.6"/>
+          <text x="430" y="53" text-anchor="middle" class="lbl" font-size="13" fill="var(--ink-soft)">JOB ORDER POSTED</text>
+          <line x1="430" y1="74" x2="430" y2="122" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#mInk)"/>
+          <text x="446" y="102" class="lbl" font-size="11" fill="var(--ink-soft)">step 1 &middot; embedded once, cached</text>
+
+          <!-- Applicant pill -->
+          <rect x="260" y="124" width="340" height="54" rx="27" fill="none" stroke="var(--ink-soft)" stroke-width="1.6"/>
+          <text x="430" y="157" text-anchor="middle" class="lbl" font-size="13" fill="var(--ink-soft)">APPLICANT APPLIES</text>
+          <line x1="430" y1="178" x2="430" y2="216" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#mInk)"/>
+
+          <!-- Gate diamond -->
+          <polygon points="430,218 590,290 430,362 270,290" fill="var(--amber-fill)" stroke="var(--amber)" stroke-width="2"/>
+          <text x="430" y="278" text-anchor="middle" class="lbl" font-size="12" fill="var(--amber)">STEP 2 &middot; GATE</text>
+          <text x="430" y="297" text-anchor="middle" class="n-body" font-size="13" fill="var(--ink)">missing a required</text>
+          <text x="430" y="314" text-anchor="middle" class="n-body" font-size="13" fill="var(--ink)">certificate?</text>
+
+          <!-- Excluded branch -->
+          <line x1="590" y1="290" x2="648" y2="290" stroke="var(--ink-soft)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#mSoft)"/>
+          <text x="619" y="276" text-anchor="middle" class="lbl" font-size="11" fill="var(--ink-soft)">YES</text>
+          <rect x="650" y="228" width="192" height="124" rx="3" fill="var(--excluded-fill)" stroke="var(--ink-soft)" stroke-width="1.4" stroke-dasharray="5 4"/>
+          <text x="746" y="256" text-anchor="middle" class="n-title" font-size="14" fill="var(--ink)">EXCLUDED</text>
+          <text x="746" y="278" text-anchor="middle" class="n-body" font-size="12" fill="var(--ink-soft)">no score,</text>
+          <text x="746" y="294" text-anchor="middle" class="n-body" font-size="12" fill="var(--ink-soft)">no position</text>
+          <text x="746" y="318" text-anchor="middle" class="n-body" font-size="11.5" fill="var(--ink-soft)">explanation =</text>
+          <text x="746" y="334" text-anchor="middle" class="n-body" font-size="11.5" fill="var(--ink-soft)">missing cert(s)</text>
+
+          <!-- Eligible branch down -->
+          <line x1="430" y1="362" x2="430" y2="410" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#mInk)"/>
+          <text x="446" y="392" class="lbl" font-size="11" fill="var(--ink-soft)">NO &middot; eligible</text>
+
+          <!-- Step 3 -->
+          <rect x="250" y="412" width="360" height="118" rx="4" fill="var(--paper-raised)" stroke="var(--teal)" stroke-width="2"/>
+          <rect x="250" y="412" width="6" height="118" fill="var(--teal)"/>
+          <text x="276" y="440" class="n-title" font-size="13" fill="var(--teal)">STEP 3 &middot; SBERT</text>
+          <text x="276" y="463" class="n-body" font-size="13.5" fill="var(--ink)">resume &rarr; sections &rarr; chunks</text>
+          <text x="276" y="483" class="n-body" font-size="13.5" fill="var(--ink)">&rarr; 384-dim vectors</text>
+          <text x="276" y="505" class="n-body" font-size="12" fill="var(--ink-soft)">overall &middot; skills &middot; experience</text>
+          <line x1="430" y1="530" x2="430" y2="570" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#mInk)"/>
+          <text x="446" y="555" class="lbl" font-size="11" fill="var(--ink-soft)">3 vectors saved</text>
+
+          <!-- Step 4 -->
+          <rect x="250" y="572" width="360" height="110" rx="4" fill="var(--paper-raised)" stroke="var(--line)" stroke-width="1.6"/>
+          <text x="276" y="600" class="n-title" font-size="13" fill="var(--ink)">STEP 4 &middot; COMPARE</text>
+          <text x="276" y="623" class="n-body" font-size="13.5" fill="var(--ink)">three cosine comparisons</text>
+          <text x="276" y="645" class="n-body" font-size="12" fill="var(--ink-soft)">overall &middot; skills &middot; experience (0&ndash;1)</text>
+          <line x1="430" y1="682" x2="430" y2="720" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#mInk)"/>
+
+          <!-- Step 5 -->
+          <rect x="250" y="722" width="360" height="132" rx="4" fill="var(--paper-raised)" stroke="var(--line)" stroke-width="1.6"/>
+          <text x="276" y="750" class="n-title" font-size="13" fill="var(--ink)">STEP 5 &middot; MEASURE</text>
+          <text x="276" y="773" class="n-body" font-size="13.5" fill="var(--ink)">six more measurements</text>
+          <text x="276" y="794" class="n-body" font-size="11.8" fill="var(--ink-soft)">skills matched &middot; skill share &middot; years &Delta;</text>
+          <text x="276" y="812" class="n-body" font-size="11.8" fill="var(--ink-soft)">education &Delta; &middot; preferred certs &middot; country</text>
+          <line x1="430" y1="854" x2="430" y2="892" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#mInk)"/>
+          <text x="446" y="877" class="lbl" font-size="11" fill="var(--ink-soft)">9 numbers total</text>
+
+          <!-- Step 6 -->
+          <rect x="250" y="894" width="360" height="118" rx="4" fill="var(--paper-raised)" stroke="var(--amber)" stroke-width="2"/>
+          <rect x="250" y="894" width="6" height="118" fill="var(--amber)"/>
+          <text x="276" y="922" class="n-title" font-size="13" fill="var(--amber)">STEP 6 &middot; LIGHTGBM</text>
+          <text x="276" y="945" class="n-body" font-size="13.5" fill="var(--ink)">scores all nine numbers,</text>
+          <text x="276" y="965" class="n-body" font-size="13.5" fill="var(--ink)">explains each contribution</text>
+          <text x="276" y="987" class="n-body" font-size="12" fill="var(--ink-soft)">computed and saved every time</text>
+          <line x1="430" y1="1012" x2="430" y2="1018" stroke="var(--ink)" stroke-width="1.6"/>
+
+          <!-- Fork diamond -->
+          <polygon points="430,1020 600,1096 430,1172 260,1096" fill="var(--amber-fill)" stroke="var(--amber)" stroke-width="2"/>
+          <text x="430" y="1082" text-anchor="middle" class="lbl" font-size="12" fill="var(--amber)">STEP 7 &middot; TRUST CHECK</text>
+          <text x="430" y="1101" text-anchor="middle" class="n-body" font-size="12.5" fill="var(--ink)">trained on real</text>
+          <text x="430" y="1118" text-anchor="middle" class="n-body" font-size="12.5" fill="var(--ink)">hiring outcomes?</text>
+
+          <!-- Left branch: active today -->
+          <line x1="260" y1="1096" x2="180" y2="1178" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#mInk)"/>
+          <text x="150" y="1150" text-anchor="middle" class="lbl" font-size="11" fill="var(--ink-soft)">NOT YET</text>
+          <text x="150" y="1163" text-anchor="middle" class="lbl" font-size="11" fill="var(--ink-soft)">(today)</text>
+          <rect x="40" y="1180" width="280" height="100" rx="4" fill="var(--teal-fill)" stroke="var(--teal)" stroke-width="2"/>
+          <text x="180" y="1216" text-anchor="middle" class="n-title" font-size="13" fill="var(--teal)">ORDER BY COSINE</text>
+          <text x="180" y="1235" text-anchor="middle" class="n-title" font-size="13" fill="var(--teal)">SIMILARITY</text>
+          <text x="180" y="1258" text-anchor="middle" class="n-body" font-size="11.5" fill="var(--ink-soft)">active path, right now</text>
+
+          <!-- Right branch: future -->
+          <line x1="600" y1="1096" x2="680" y2="1178" stroke="var(--ink-soft)" stroke-width="1.6" stroke-dasharray="5 4" marker-end="url(#mSoft)"/>
+          <text x="712" y="1150" text-anchor="middle" class="lbl" font-size="11" fill="var(--ink-soft)">ONCE</text>
+          <text x="712" y="1163" text-anchor="middle" class="lbl" font-size="11" fill="var(--ink-soft)">TRUSTED</text>
+          <rect x="520" y="1180" width="300" height="100" rx="4" fill="none" stroke="var(--ink-soft)" stroke-width="1.4" stroke-dasharray="5 4"/>
+          <text x="670" y="1216" text-anchor="middle" class="n-title" font-size="13" fill="var(--ink-soft)">ORDER BY LIGHTGBM</text>
+          <text x="670" y="1235" text-anchor="middle" class="n-title" font-size="13" fill="var(--ink-soft)">SCORE</text>
+          <text x="670" y="1258" text-anchor="middle" class="n-body" font-size="11.5" fill="var(--ink-soft)">switches on automatically</text>
+
+          <!-- Merge -->
+          <path d="M180,1280 L180,1300 Q180,1320 210,1320 L400,1320" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+          <path d="M670,1280 L670,1300 Q670,1320 640,1320 L460,1320" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+          <line x1="430" y1="1320" x2="430" y2="1320" stroke="var(--ink)" stroke-width="1.4"/>
+          <line x1="430" y1="1320" x2="430" y2="1338" stroke="var(--ink)" stroke-width="1.6" marker-end="url(#mInk)"/>
+
+          <!-- Step 8 -->
+          <rect x="230" y="1340" width="400" height="112" rx="4" fill="var(--paper-raised)" stroke="var(--line)" stroke-width="1.6"/>
+          <text x="256" y="1368" class="n-title" font-size="13" fill="var(--ink)">STEP 8 &middot; SAVE</text>
+          <text x="256" y="1391" class="n-body" font-size="13.5" fill="var(--ink)">ranked list + full explanation,</text>
+          <text x="256" y="1411" class="n-body" font-size="13.5" fill="var(--ink)">all saved together</text>
+          <text x="256" y="1433" class="n-body" font-size="11.8" fill="var(--ink-soft)">excluded applicants: still no position</text>
+        </svg>
+      </div>
+      <figcaption>Steps 2, 4, 5, 7 and 8 are ordinary logic, deliberately &mdash; the decisions that remove or order people stay inspectable. Only steps 3 and 6 are learned.</figcaption>
+    </figure>
+
+    <div class="legend">
+      <div class="legend-item"><span class="swatch sw-teal"></span>AI &middot; learned from data (steps 3, 6)</div>
+      <div class="legend-item"><span class="swatch sw-amber"></span>Rule interlock &middot; gate &amp; trust check (steps 2, 7)</div>
+      <div class="legend-item"><span class="swatch sw-logic"></span>Ordinary logic (steps 1, 4, 5, 8)</div>
+    </div>
+  </section>
+
+  <footer>
+    Derived from ALGORITHM.md &middot; MatchWise (FIRA thesis) &middot; figure for defense presentation
+  </footer>
+
+</div>
